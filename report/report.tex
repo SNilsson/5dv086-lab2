@@ -1,0 +1,210 @@
+
+\documentclass[10pt, titlepage, oneside, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{wrapfig}
+\usepackage[english]{babel}
+\usepackage{amssymb, graphicx, fancyhdr}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{verbatim}
+\usepackage{verbatimbox}
+\usepackage{varioref}
+\addtolength{\textheight}{20mm}
+\addtolength{\voffset}{-5mm}
+\renewcommand{\sectionmark}[1]{\markleft{#1}}
+
+\newcommand{\Section}[1]{\section{#1}\vspace{-8pt}}
+\newcommand{\Subsection}[1]{\vspace{-4pt}\subsection{#1}\vspace{-8pt}}
+\newcommand{\Subsubsection}[1]{\vspace{-4pt}\subsubsection{#1}\vspace{-8pt}}
+	
+
+\newcounter{appendixpage}
+
+\newenvironment{appendices}{
+	\setcounter{appendixpage}{\arabic{page}}
+	\stepcounter{appendixpage}
+}{
+}
+
+\newcommand{\appitem}[2]{
+	\stepcounter{section}
+	\addtocontents{toc}{\protect\contentsline{section}{\numberline{\Alph{section}}#1}{\arabic{appendixpage}}}
+	\addtocounter{appendixpage}{#2}
+}
+
+\newcommand{\appsubitem}[2]{
+	\stepcounter{subsection}
+	\addtocontents{toc}{\protect\contentsline{subsection}{\numberline{\Alph{section}.\arabic{subsection}}#1}{\arabic{appendixpage}}}
+	\addtocounter{appendixpage}{#2}
+}
+
+
+\def\inst{Computing Science}
+\def\typeofdoc{Obligatory Exercise}
+\def\course{Programing Languages}
+\def\pretitle{Short Message Service}
+\def\title{Obligatory Exercise 2}
+\def\name{Simon Nilsson}
+\def\username{c09snn}
+\def\email{\username{}@cs.umu.se}
+\def\path{edu/5dv086/lab2}
+\def\graderA{Jan Erik Moström}
+\def\graderB{Petter Ericson}
+\def\graderC{}
+
+\def\fullpath{\raisebox{1pt}{$\scriptstyle \sim$}\username/\path}
+
+\begin{document}
+
+
+	\begin{titlepage}
+		\thispagestyle{empty}
+		\begin{large}
+			\begin{tabular}{@{}p{0.93\textwidth}@{}}
+				\textbf{UMEÅ UNIVERSITY \hfill \today} \\
+				\textbf{Department of \inst} \\
+				\textbf{\typeofdoc} \\
+			\end{tabular}
+		\end{large}
+		\vspace{10mm}
+		\begin{center}
+			\Large{\textbf{\course}}\\
+			\vspace{10mm}
+			\huge{\textbf{\title}} \\
+			\LARGE{\pretitle} \\
+
+			\vspace{15mm}
+			\begin{large}
+				\begin{tabular}{ll}
+					\textbf{Name} & \name \\
+					\textbf{E-mail} & \texttt{\email} \\
+					\textbf{Path} & \texttt{\fullpath} \\
+				\end{tabular}
+			\end{large} \\
+			\vspace{20mm}
+
+			%\LARGE{\textbf{Resubmission 1}} \\
+			\vspace{10mm}
+			%\Large{\textbf{Change log}}\\
+			
+		%	\begin{large}
+      
+		%		\begin{itemize}
+		%		 \item add\_vertex now returns vertex id \\
+		%		\item The Java implementation of add\_edge can \\
+		%		no longer cause the DAG to have cycles
+		%		\end{itemize}
+		%	 \end{large}
+			 
+			
+			\vfill
+			\large{\textbf{Grader}}\\
+			\mbox{\large{\graderC}}\\
+			\mbox{\large{\graderA}}\\
+			\mbox{\large{\graderB}}
+		\end{center}
+	\end{titlepage}
+
+
+	% fixar sidfot
+	\lfoot{\footnotesize{\name, \email}}
+	\rfoot{\footnotesize{\today}}
+	\lhead{\sc\footnotesize\title}
+	\rhead{\nouppercase{\sc\footnotesize\leftmark}}
+	\pagestyle{fancy}
+	\renewcommand{\headrulewidth}{0.2pt}
+	\renewcommand{\footrulewidth}{0.2pt}
+
+
+	\pagenumbering{roman}
+%	\tableofcontents
+	
+
+	\newpage
+
+	\pagenumbering{arabic}
+
+
+	\setlength{\parindent}{0pt}
+
+	\setlength{\parskip}{10pt}
+
+\Section{Introduction}
+T9 is a technology used in phones to quickly type text without using a keyboard, even though most 
+new phones uses a virtual keyboard via touch screens. The process is based on having many letters and symbols 
+on each key. Most of the latter systems, such as T9, were dictionary based and reduces the number 
+of key buttons pressed by mapping the input to the dictionary. The dictionary also picks, unless 
+the user choose something else, the most common word. 
+
+The goal is to implement a T9 system using Haskell. The system will take a message 
+input and return a minimum sequence of key pressed that produces a given message for a particular
+dictionary augmented with word counts. 
+
+The system must have the following properties:
+
+\begin{itemize}
+	\item{A message is a string of upper-case letters A-Z and blanks.}
+	\item{An input string is a sequence of digits (0,2-9) and the special character \textasciicircum.}
+	\item{A prefix is a sequence of digits (2-9) representing letters.}
+	%\item{The character \textasciicircum appended to a prefix modifies that prefix.}
+	\item{A prefix can be modified any number of times.}
+	\item{Each (modified) prefix is mapped into a word as follows.}
+	\begin{itemize}
+		\item{The prefix together with a dictionary determines a set of possible words.}
+		\item{The possible words are sorted in decreasing order of frequency.}
+		\item{Ties are broken by ordering the words lexicographically.}
+		\item{If there are no possible words, the prefix maps into the special character ?.}
+		\item{A prefix which has been modified N times maps into the (N+1)-th word in the list.}
+		\item{If (N+1) exceeds the length of the list, then it wraps around the list.}
+	\end{itemize}
+\end{itemize}
+
+This implementation uses a pre-defined dictionary that can be found here:
+\url{http://www8.cs.umu.se/kurser/5DV086/VT14/resources/Dictionary.hs}
+
+The original specification can be found at:\\
+\url{http://www8.cs.umu.se/kurser/5DV086/VT14/xlab2.html}
+
+\Section{User Guide}
+The implementation can be found at \texttt{c09snn/edu/5DV086/lab2} and also on \texttt{GitHub}\footnote{Type of revision 
+control, also known as version control and source control. It is the management of changes to documents, computer programs, 
+large web sites, and other collections of information.} at the address
+\url{https://github.com/SNilsson/5dv086-lab2} The solution 
+requires a file named \texttt{Dictionary.hs} to work correctly. For verification and testing purpose 
+the files \texttt{Dictionary.hs}, \texttt{test.hs} and \texttt{Messages.hs} is added to the final submission. 
+
+The implementation follows the specification provided with additional modifications: 
+
+The implementation sorts the sequences of words by their priority and then by name.
+
+To run the T9 implementation the user must have \texttt{ghci}\footnote{GHC is a state-of-the-art, open source, compiler 
+and interactive environment for the functional language Haskell.
+GHCi is GHC's interactive environment, in which Haskell expressions can be interactively evaluated and programs can be interpreted.} 
+installed and through it load \texttt{T9.hs}.
+Then execute the method \texttt{get\_t9\_sequence} that accepts a string as input. When imported from other files
+the only accessible method that can be run is \texttt{get\_t9\_sequence} and it should be the only one the user
+executes.
+
+\texttt{test.hs} can be used to check all the messages in \texttt{Messages.hs}.
+
+\Section{Implementation}
+The implementation is fairly straight forward with few algorithms. \texttt{get\_t9} uses other hidden 
+functions that helps it decipher:
+\begin{itemize}
+\item{The amount of keys pressed to generate the word}
+\item{The shortest sequence of keys pressed to generate the word}
+\item{How many \textasciicircum that should be used to get the correct word or word sequence given}
+\end{itemize}
+
+\subsection{ \texttt{get\_shortest\_sequence} }
+This function takes a sequence of characters, i.e a word and a dictionary as input and returns a sequence of
+keys pressed to create the word.  
+
+\section{Tests}
+The following section will test the messages in the \texttt{Messages.hs} file and print the result
+in a file. This file is attached in the file. Note that the program will not write the file for the user! The file
+just creates output called a, while in the program use \texttt{writeFile "file\_name" a} to create a nicely printed 
+file of the results. The file \texttt{test.txt} is attached at the end of this report. 
+
+\end{document}
+
